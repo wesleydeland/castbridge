@@ -10,8 +10,8 @@ android {
         applicationId = "com.castbridge"
         minSdk = 29
         targetSdk = 36
-        versionCode = 11
-        versionName = "1.0.1"
+        versionCode = 12
+        versionName = "1.0.2"
         ndk {
             abiFilters += "arm64-v8a"
         }
@@ -71,6 +71,13 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            // F-Droid's source scanner rejects APKs carrying Google's
+            // "dependency metadata" signing block (added by AGP 4.2+), which
+            // would otherwise block reproducible builds. No runtime effect.
+            dependenciesInfo {
+                includeInApk = false
+                includeInBundle = false
+            }
             if (project.findProperty("RELEASE_STORE_FILE") != null) {
                 signingConfig = signingConfigs.getByName("release")
             }
