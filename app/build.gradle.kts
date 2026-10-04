@@ -10,8 +10,8 @@ android {
         applicationId = "com.castbridge"
         minSdk = 29
         targetSdk = 36
-        versionCode = 9
-        versionName = "0.4.4"
+        versionCode = 10
+        versionName = "1.0.0"
         ndk {
             abiFilters += "arm64-v8a"
         }

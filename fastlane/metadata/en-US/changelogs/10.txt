@@ -1,0 +1,10 @@
+First public release.
+
+- Cast audio from your phone to AirPlay 2 speakers — HomePod, HomePod mini, Sonos, Apple TV, Airport Express and more. Runs entirely on the phone: no bridge box, no Raspberry Pi, no host machine.
+- Receivers are discovered automatically over mDNS/Bonjour, or you can type an IP address.
+- Your phone's volume keys control the speaker while casting, with on-screen +/− buttons as a fallback.
+- The phone speaker is muted while casting, so you don't hear both.
+- Corrected audio capture rate negotiation: the app reads the real sample rate the device granted (some silently override the requested 44.1 kHz and run at 48 kHz) and paces the sender to match, fixing garbled or dropped audio on those devices.
+- Added a live capture status line (negotiated rate, peak level, read errors, elapsed time) so a silent cast can be diagnosed at a glance.
+- Removed a permission that was declared but never used.
+- No accounts, no ads, no analytics, no data collection. Audio stays on your local network.
