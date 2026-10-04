@@ -56,8 +56,10 @@ public class CastService extends Service {
             am.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
             phoneMuted = true;
         } else {
-            am.setStreamVolume(AudioManager.STREAM_MUSIC,
-                    savedVolume < 0 ? 1 : savedVolume, 0);
+            // Restore only a volume we actually recorded — never invent one.
+            if (savedVolume >= 0) {
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, savedVolume, 0);
+            }
             phoneMuted = false;
         }
         return phoneMuted;
@@ -66,6 +68,15 @@ public class CastService extends Service {
     private AudioRecord record;
     private Thread thread;
     private MediaSession session;
+    private MediaProjection projection;
+    private final MediaProjection.Callback projectionCallback = new MediaProjection.Callback() {
+        @Override public void onStop() {
+            // The projection ended from outside (user tapped "Stop now" on the
+            // cast affordance, or the system revoked it). A mediaProjection
+            // foreground service must not outlive its projection, so stop.
+            stopSelf();
+        }
+    };
     private volatile boolean stop = false;
     private int rate = 44100;
 
@@ -95,9 +106,9 @@ public class CastService extends Service {
         }
 
         // Remote-volume media session: while this session is the active one,
-        // the phone's volume keys drive the HOMEPOD's volume (cast-app
-        // behaviour) instead of the phone's own stream.
-        session = new MediaSession(this, "homepod-cast");
+        // the phone's volume keys drive the SPEAKER's volume (the behaviour
+        // cast apps have) instead of the phone's own stream.
+        session = new MediaSession(this, "CastBridge");
         session.setActive(true);
         session.setPlaybackState(new PlaybackState.Builder()
                 .setState(PlaybackState.STATE_PLAYING, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1.0f)
@@ -131,6 +142,12 @@ public class CastService extends Service {
 
         MediaProjection mp = ((MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE))
                 .getMediaProjection(resultCode, data);
+        if (mp == null) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        mp.registerCallback(projectionCallback, new android.os.Handler(getMainLooper()));
+        projection = mp;
 
         AudioPlaybackCaptureConfiguration cfg = new AudioPlaybackCaptureConfiguration.Builder(mp)
                 .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
@@ -230,10 +247,17 @@ public class CastService extends Service {
             session.release();
             session = null;
         }
-        if (phoneMuted) { // restore the phone volume on the way out
+        if (projection != null) {
+            // The callback fires stopSelf() again — harmless when going away.
+            try { projection.unregisterCallback(projectionCallback); } catch (Exception ignored) {}
+            try { projection.stop(); } catch (Exception ignored) {}
+            projection = null;
+        }
+        if (phoneMuted) {
             AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
-            am.setStreamVolume(AudioManager.STREAM_MUSIC,
-                    savedVolume < 0 ? 1 : savedVolume, 0);
+            if (savedVolume >= 0) {
+                am.setStreamVolume(AudioManager.STREAM_MUSIC, savedVolume, 0);
+            }
             phoneMuted = false;
         }
         instance = null;

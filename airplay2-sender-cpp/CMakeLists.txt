@@ -18,7 +18,7 @@ option(AIRPLAY_SANITIZE      "build with address + undefined sanitizers"  OFF)
 # -Werror when a newer compiler learns a new warning.
 #
 # CastBridge vendors mbedTLS as a git submodule at
-# ../third_party/mbedtls (pinned to v3.6.0) instead of fetching it, so the
+# ../third_party/mbedtls (pinned to v3.6.7) instead of fetching it, so the
 # build needs no network access at all. Upstream uses FetchContent here; the
 # dependency source and version are identical, only the delivery differs.
 # If you are building this tree standalone (outside CastBridge), pass

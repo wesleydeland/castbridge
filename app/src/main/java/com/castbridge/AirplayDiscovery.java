@@ -6,7 +6,9 @@ import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /** Finds AirPlay receivers on the LAN via mDNS (`_airplay._tcp`). */
@@ -19,6 +21,9 @@ public class AirplayDiscovery {
     private final NsdManager nsd;
     private final Listener listener;
     private final Set<String> emitted = new HashSet<>();
+    // API 34+ resolve path: every registration must be unregistered again,
+    // NSD keeps the callback (and its socket traffic) alive otherwise.
+    private final List<NsdManager.ServiceInfoCallback> callbacks = new ArrayList<>();
     private NsdManager.DiscoveryListener discovery;
     private volatile boolean stopped = false;
 
@@ -52,15 +57,19 @@ public class AirplayDiscovery {
 
     private void resolve(NsdServiceInfo info) {
         if (Build.VERSION.SDK_INT >= 34) {
-            nsd.registerServiceInfoCallback(info, Runnable::run,
-                    new NsdManager.ServiceInfoCallback() {
-                        @Override public void onServiceInfoCallbackRegistrationFailed(int err) {}
-                        @Override public void onServiceUpdated(NsdServiceInfo updated) {
-                            emit(updated);
-                        }
-                        @Override public void onServiceLost() {}
-                        @Override public void onServiceInfoCallbackUnregistered() {}
-                    });
+            NsdManager.ServiceInfoCallback cb = new NsdManager.ServiceInfoCallback() {
+                @Override public void onServiceInfoCallbackRegistrationFailed(int err) {}
+                @Override public void onServiceUpdated(NsdServiceInfo updated) {
+                    emit(updated);
+                }
+                @Override public void onServiceLost() {}
+                @Override public void onServiceInfoCallbackUnregistered() {}
+            };
+            synchronized (callbacks) {
+                if (stopped) return; // stop() ran while we were setting up
+                callbacks.add(cb);
+            }
+            nsd.registerServiceInfoCallback(info, Runnable::run, cb);
         } else {
             nsd.resolveService(info, new NsdManager.ResolveListener() {
                 @Override public void onResolveFailed(NsdServiceInfo si, int err) {}
@@ -82,7 +91,15 @@ public class AirplayDiscovery {
     }
 
     public void stop() {
-        stopped = true;
+        synchronized (callbacks) {
+            stopped = true;
+            for (NsdManager.ServiceInfoCallback cb : callbacks) {
+                try {
+                    nsd.unregisterServiceInfoCallback(cb);
+                } catch (Exception ignored) {}
+            }
+            callbacks.clear();
+        }
         try {
             if (discovery != null) nsd.stopServiceDiscovery(discovery);
         } catch (Exception ignored) {}
