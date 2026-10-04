@@ -10,7 +10,7 @@ LTS branches.
 Please report security issues privately rather than opening a public issue:
 open a GitHub **security advisory** for this repository ("Report a
 vulnerability" on the Security tab), or email the maintainer at
-**wesley@wesleydeland.com** with details and, if possible, a reproduction.
+**security@wesleydeland.com** with details and, if possible, a reproduction.
 
 You will get an acknowledgement within a week. Please include:
 
