@@ -1,0 +1,6 @@
+* Fixed: the app no longer shows "Start casting" while a cast is actually still running (e.g. after rotating the screen).
+* Fixed: the capture service stops cleanly when the system revokes the capture consent or the receiver ends the session, so the casting notification no longer lingers.
+* Fixed: no more mDNS resolve-callback leak on Android 14+.
+* Fixed: a rare crash when stopping a cast while audio was heavily queued, and stop/start now works repeatedly without restarting the app.
+* The phone volume is only restored to the level actually recorded at mute time.
+* Housekeeping: AGP 8.9.1, Mbed TLS 3.6.7, leftover development strings cleaned up. No new permissions, privacy behaviour unchanged.
