@@ -1,0 +1,22 @@
+# Gradle / Android
+.gradle/
+build/
+.cxx/
+local.properties
+*.iml
+.idea/
+captures/
+
+# signing material — never commit
+*.keystore
+*.jks
+KEYSTORE-INFO.txt
+keystore.properties
+
+# vendored airplay2-sender-cpp build output
+airplay2-sender-cpp/build/
+airplay2-sender-cpp/logs/
+
+# OS / editor
+.DS_Store
+*.swp
