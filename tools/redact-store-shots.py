@@ -20,8 +20,30 @@ BG = (14, 18, 24)        # #0E1218  app background
 TEXT = (242, 245, 248)   # #F2F5F8  primary text
 ACCENT = (91, 157, 255)  # #5B9DFF  discovered-device rows
 
-FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-FONT_REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+FONT_HINT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+FONT_HINT_REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+
+
+def _first_font(*paths):
+    """Return the first font path that exists, so the script runs on more
+    than one OS (the hardcoded paths above are the Linux defaults)."""
+    import glob
+    candidates = list(paths)
+    # pip-installed matplotlib bundles DejaVu on every platform
+    candidates += glob.glob(
+        str(pathlib.Path(sys.executable).parent.parent / "lib/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans*.ttf"))
+    candidates += glob.glob("C:/Windows/Fonts/segoeui*.ttf")       # Windows
+    candidates += glob.glob("/System/Library/Fonts/Supplemental/Arial*.ttf")  # macOS
+    for c in candidates:
+        if c and pathlib.Path(c).exists():
+            return c
+    raise SystemExit("no usable TTF font found; install DejaVu or edit FONT_HINT*")
+
+
+_FONT_BOLD = _first_font(FONT_HINT)
+_FONT_REG = _first_font(FONT_HINT_REG)
+FONT_BOLD = _FONT_BOLD if _FONT_BOLD.endswith("Bold.ttf") else _FONT_BOLD.replace(".ttf", "bd.ttf")
+FONT_REG = _FONT_REG
 
 # Generic replacements. Deliberately unlike anything in the original captures:
 # the source rows named real rooms of the developer's own network, so neutral

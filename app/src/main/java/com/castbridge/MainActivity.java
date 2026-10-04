@@ -321,6 +321,15 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         muteBtn.setText(CastService.isPhoneMuted() ? "Unmute phone" : "Mute phone");
+        // Sync with the service: after the activity is recreated (rotation,
+        // process restore) while a cast runs, running/g/status would otherwise
+        // show the idle UI while capture is still live.
+        boolean live = CastService.isRunning();
+        if (live != running) {
+            running = live;
+            setRunningUi(live);
+            status.setText(live ? "casting to " + prefs.getString("host", "") : "idle");
+        }
     }
 
     @Override

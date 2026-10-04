@@ -52,7 +52,7 @@ reproduced here. Full license texts are distributed alongside this file.
    option; Mbed TLS is also offered under GPL-2.0-or-later).
 
    Included as a git submodule at `third_party/mbedtls`, pinned to commit
-   2ca6c285a0dd3f33982dd57299012dacab1ff206 (v3.6.0), together with its own
+   068ff080b369adfac81509f9b57b2afabaf82dc5 (v3.6.7), together with its own
    `framework` submodule. Provides the SRP-6a bignum mod-exp, SHA-512 /
    HMAC-SHA512, HKDF-SHA512, ChaCha20-Poly1305 AEAD, X25519 ECDH and CTR-DRBG
    used by the AirPlay pairing code. Upstream airplay2-sender-cpp fetches this
