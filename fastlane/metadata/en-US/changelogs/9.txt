@@ -1,0 +1,3 @@
+* Corrected audio capture rate negotiation: the app now reads the real sample rate the device granted (some override the requested 44.1 kHz and run at 48 kHz) and paces the sender to match, which fixes garbled or dropped audio on those devices.
+* Added a live capture status line showing the negotiated rate, peak signal level, read errors, and how long the stream has been running, so a silent cast can be diagnosed at a glance.
+* Removed a permission that was declared but never used.

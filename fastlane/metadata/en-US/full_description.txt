@@ -1,0 +1,29 @@
+Cast audio from your Android phone to AirPlay 2 speakers — HomePod, HomePod mini, Sonos, Apple TV, Airport Express, and more.
+
+Your Android phone cannot talk to AirPlay speakers. Google Cast and AirPlay are different ecosystems, and no phone bridges them. CastBridge does.
+
+HOW IT WORKS
+1. Open CastBridge. Receivers on your Wi-Fi are discovered automatically.
+2. Tap Start casting and confirm Android's capture prompt.
+3. Play something in any audio app. The sound comes out of the speaker.
+
+Everything runs on your phone. No bridge box, no Raspberry Pi, no computer to leave switched on.
+
+CONTROLS
+- Your phone's volume keys control the speaker while casting.
+- One tap mutes the phone's own speaker, so you don't hear both.
+- An ongoing notification keeps you in control; stop whenever you like.
+- mDNS discovery finds receivers automatically, or type an IP address.
+
+GOOD TO KNOW
+- Everything stays on your local network. No accounts, no cloud, no analytics, no data collection. Your audio never leaves your Wi-Fi.
+- Some apps (Netflix and other DRM-protected streaming apps) block audio capture by design. They play silently while casting; no app can capture them.
+- Expect a couple of seconds of delay between phone and speaker. That is how the AirPlay protocol works, not a fault.
+- Requires Android 10 or newer, an arm64 device, and the speaker on the same Wi-Fi network.
+- Works with any app that permits playback capture: music players, podcast apps, browsers, video apps.
+
+NOT AFFILIATED WITH APPLE
+CastBridge is an independent, open-source project. It is not affiliated with, sponsored by, or endorsed by Apple Inc. or any other speaker manufacturer. "AirPlay", "HomePod" and "Siri" are trademarks of Apple Inc.; "Sonos" is a trademark of Sonos, Inc. They are used here only to describe what this app is compatible with.
+
+OPEN SOURCE
+CastBridge is free and open source, licensed under the Apache License 2.0. The source, including the AirPlay 2 protocol implementation it is built on, is available for review and audit.
