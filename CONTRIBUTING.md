@@ -37,7 +37,7 @@ NDK `27.2.12479018`, CMake `3.22.1`. Only `arm64-v8a` is built.
 | `app/src/main/cpp/native_sender.cpp` | JNI bridge: capture PCM into the sender's ring buffer |
 | `airplay2-sender-cpp/` | Vendored, patched AirPlay 2 sender (see `NOTICE` for the patches) |
 | `third_party/mbedtls` | Pinned submodule providing the crypto primitives |
-| `fastlane/metadata/` | F-Droid store listing |
+| `fastlane/metadata/android/` | F-Droid / Google Play store listing |
 
 The interesting protocol code is the vendored sender; the app itself is a
 capture-loop, a JNI bridge and one screen of UI.
