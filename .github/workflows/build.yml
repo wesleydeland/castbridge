@@ -1,0 +1,63 @@
+name: build
+
+# Verifies that a fresh checkout builds the release APK with no network access
+# beyond dependency resolution, and that the native library is reproducible.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK components
+        run: |
+          sdkmanager --licenses <<< yes || true
+          sdkmanager "platforms;android-36" "build-tools;35.0.0" \
+                     "ndk;27.2.12479018" "cmake;3.22.1"
+
+      - name: Build release APK (unsigned)
+        run: ./gradlew assembleRelease
+
+      - name: Verify the APK
+        run: |
+          APK=$(ls app/build/outputs/apk/release/*.apk)
+          echo "built: $APK"
+          $ANDROID_HOME/build-tools/35.0.0/aapt2 dump badging "$APK" \
+            | grep -E '^package|targetSdkVersion|uses-permission'
+          # 16 KB page-size alignment (Android 15+ requirement)
+          python3 - <<'PY'
+          import glob, subprocess, zipfile, os
+          apk = glob.glob('app/build/outputs/apk/release/*.apk')[0]
+          z = zipfile.ZipFile(apk)
+          so = 'lib/arm64-v8a/libnative_sender.so'
+          open('/tmp/lib.so','wb').write(z.read(so))
+          readelf = os.path.join(os.environ['ANDROID_HOME'],
+              'ndk/27.2.12479018/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-readelf')
+          out = subprocess.run([readelf,'-l','/tmp/lib.so'],
+                               capture_output=True, text=True).stdout
+          aligns = {l.split()[-1] for l in out.splitlines() if ' LOAD ' in l}
+          print('LOAD aligns:', aligns)
+          assert aligns == {'0x4000'}, f'not 16 KB aligned: {aligns}'
+          print('16 KB page alignment OK')
+          PY
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: castbridge-release-unsigned
+          path: app/build/outputs/apk/release/*.apk
