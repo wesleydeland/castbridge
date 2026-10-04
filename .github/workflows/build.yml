@@ -21,12 +21,18 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # v4 installs current cmdline-tools (22.0) and defaults `packages` to
+      # platform-tools only. v3 installed cmdline-tools 16.0, whose sdkmanager
+      # still requested the retired `tools` package and failed with
+      # "Failed to find package 'tools'". It also accepts SDK licenses itself,
+      # so no manual `sdkmanager --licenses` step is needed.
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          accept-android-sdk-licenses: 'yes'
 
       - name: Install SDK components
         run: |
-          sdkmanager --licenses <<< yes || true
           sdkmanager "platforms;android-36" "build-tools;35.0.0" \
                      "ndk;27.2.12479018" "cmake;3.22.1"
 
