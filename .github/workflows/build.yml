@@ -24,12 +24,13 @@ jobs:
       # v4 installs current cmdline-tools (22.0) and defaults `packages` to
       # platform-tools only. v3 installed cmdline-tools 16.0, whose sdkmanager
       # still requested the retired `tools` package and failed with
-      # "Failed to find package 'tools'". It also accepts SDK licenses itself,
-      # so no manual `sdkmanager --licenses` step is needed.
+      # "Failed to find package 'tools'".
+      #
+      # accept-android-sdk-licenses is read with getBooleanInput(), so it only
+      # accepts true/false — passing 'yes' throws a YAML schema TypeError. It
+      # already defaults to true, so it is left unset here.
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
-        with:
-          accept-android-sdk-licenses: 'yes'
 
       - name: Install SDK components
         run: |
