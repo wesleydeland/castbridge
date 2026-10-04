@@ -24,16 +24,19 @@ FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 FONT_REG = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
 # Generic replacements. Deliberately unlike anything in the original captures:
-# the source rows were "Kitchen speaker" and "Bathroom", so neutral names are
-# used here to make it obvious the listing is staged rather than a live network.
+# the source rows named real rooms of the developer's own network, so neutral
+# names are used here to make it obvious the listing is staged, not a live network.
 GEN_IP_FIELD = "192.168.1.50"
 GEN_ROWS = (("Living room speaker", "192.168.1.50"),
             ("Bedroom speaker", "192.168.1.51"))
 
 # Measured geometry (source: 1220x2712 captures, confirmed visually).
+# Rows are given as (x0, y0, x1, y1) bands; see the note in main() for how they
+# were derived. The originals contained real device names and addresses and are
+# intentionally NOT reproduced here.
 IP_FIELD = (116, 475, 1105, 596)      # the SPEAKER IP text field
-ROW1 = (100, 822, 1120, 867)          # "Kitchen speaker — 192.168.4.42"
-ROW2 = (100, 943, 1120, 978)          # "Bathroom — 192.168.4.35"
+ROW1 = (100, 822, 1120, 867)          # first discovered-device row
+ROW2 = (100, 943, 1120, 978)          # second discovered-device row
 
 
 def _font(path, size):
