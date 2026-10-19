@@ -1,0 +1,1 @@
+* Gradle wrapper downloads are now checksum-verified against a pinned SHA-256 (no functional change).
