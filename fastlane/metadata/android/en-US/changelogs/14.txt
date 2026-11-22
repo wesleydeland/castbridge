@@ -1,0 +1,1 @@
+* Release builds are now processed by R8 (shrinking + obfuscation) instead of shipping raw bytecode.
