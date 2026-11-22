@@ -10,8 +10,8 @@ android {
         applicationId = "com.castbridge"
         minSdk = 29
         targetSdk = 36
-        versionCode = 13
-        versionName = "1.0.3"
+        versionCode = 14
+        versionName = "1.0.4"
         ndk {
             abiFilters += "arm64-v8a"
         }
@@ -70,7 +70,19 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8: shrink + obfuscate the release build (F-Droid review asked
+            // for it). AGP 9 no longer ships proguard-android.txt (it implies
+            // -dontoptimize), so the optimize ruleset is the only default.
+            //
+            // Resource shrinking (isShrinkResources) stays OFF: F-Droid's
+            // reproducible-builds guide warns the resource shrinker can flip
+            // between shrunk/unshrunk output, and this app has almost no
+            // resources to gain from.
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             // F-Droid's source scanner rejects APKs carrying Google's
             // "dependency metadata" signing block (added by AGP 4.2+), which
             // would otherwise block reproducible builds. No runtime effect.
